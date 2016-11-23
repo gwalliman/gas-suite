@@ -67,4 +67,15 @@ public class EventList extends sObjectList
             }
         }
     }
+
+    public void closesCallEvents()
+    {
+        for(Integer x : getAllIndices())
+        {
+            Event ev = getEvent(x);
+            ev.StartDate = null;
+            ev.EndDate = null;
+            put(x, ev);
+        }
+    }
 }

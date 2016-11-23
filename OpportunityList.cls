@@ -44,6 +44,12 @@ public class OpportunityList extends sObjectList
         return eventsLinkedToOpportunities;
     }
 
+    /**
+     * Loads the child EVENTS of this OPPORTUNITYLIST 
+     * Note that we "setParents" at the very end!
+     *
+     * If you want to see us load PARENTS instead of CHILDREN, check out CaseList
+     */
     public void loadChildEvents()
     {
         if(eventsLinkedToOpportunities == null)
@@ -69,4 +75,25 @@ public class OpportunityList extends sObjectList
             }
         }
     }
+
+    public void updateEmailOptOutFromParentAccounts()
+    {
+        for(Integer x : getAllIndices())
+        {
+            Opportunity opp = getOpportunity(x);
+            Account acct = (Account) getParentFromChildIndex(x);
+            opp.Email_Opt_Out__c = acct.Is_Do_Not_Email__c;
+            put(x, opp);
+        }
+    }
+
+    public void updateHubEmails()
+    {
+        for(Integer x : getAllIndices())
+        {
+            Opportunity opp = getOpportunity(x);
+            opp.HUB_Email__c = opp.HUB_Email_Formula__c;
+            put(x, opp);
+        }
+    } 
 }
