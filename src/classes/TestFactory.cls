@@ -142,38 +142,31 @@ public class TestFactory
 
     private static void calculateAndSaveTestStatistics(Type type, ITest t, List<List<Integer>> stats)
     {
-        SF_Test_Statistics__c statsObj = new SF_Test_Statistics__c();
+        Integer Setup_CPU_Time_Elapsed = stats[1][0] - stats[0][0];
+        Integer Setup_DML_Statements_Made = stats[1][1] - stats[0][1];
+        Integer Setup_Future_Calls_Made = stats[1][2] - stats[0][2];
+        Integer Setup_SOQL_Queries_Made = stats[1][3] - stats[0][3];
+        Integer Setup_SOSL_Queries_Made = stats[1][4] - stats[0][4];
 
-        statsObj.Name = String.valueOf(Datetime.now().getTime());
-        statsObj.Test_Name__c = type.getName();
-        statsObj.Test_Human_Name__c = t.getTestHumanName();
-        statsObj.Test_Description__c = t.getTestDescription();
-        
-        statsObj.Setup_CPU_Time_Elapsed__c = stats[1][0] - stats[0][0];
-        statsObj.Setup_DML_Statements_Made__c = stats[1][1] - stats[0][1];
-        statsObj.Setup_Future_Calls_Made__c = stats[1][2] - stats[0][2];
-        statsObj.Setup_SOQL_Queries_Made__c = stats[1][3] - stats[0][3];
-        statsObj.Setup_SOSL_Queries_Made__c = stats[1][4] - stats[0][4];
+        Integer Test_CPU_Time_Elapsed = stats[3][0] - stats[2][0];
+        Integer Test_DML_Statements_Made = stats[3][1] - stats[2][1];
+        Integer Test_Future_Calls_Made = stats[3][2] - stats[2][2];
+        Integer Test_SOQL_Queries_Made = stats[3][3] - stats[2][3];
+        Integer Test_SOSL_Queries_Made = stats[3][4] - stats[2][4];
 
-        statsObj.Test_CPU_Time_Elapsed__c = stats[3][0] - stats[2][0];
-        statsObj.Test_DML_Statements_Made__c = stats[3][1] - stats[2][1];
-        statsObj.Test_Future_Calls_Made__c = stats[3][2] - stats[2][2];
-        statsObj.Test_SOQL_Queries_Made__c = stats[3][3] - stats[2][3];
-        statsObj.Test_SOSL_Queries_Made__c = stats[3][4] - stats[2][4];
+        Integer Post_Test_CPU_Time_Elapsed = stats[5][0] - stats[4][0];
+        Integer Post_Test_DML_Statements_Made = stats[5][1] - stats[4][1];
+        Integer Post_Test_Future_Calls_Made = stats[5][2] - stats[4][2];
+        Integer Post_Test_SOQL_Queries_Made = stats[5][3] - stats[4][3];
+        Integer Post_Test_SOSL_Queries_Made = stats[5][4] - stats[4][4];
 
-        statsObj.Post_Test_CPU_Time_Elapsed__c = stats[5][0] - stats[4][0];
-        statsObj.Post_Test_DML_Statements_Made__c = stats[5][1] - stats[4][1];
-        statsObj.Post_Test_Future_Calls_Made__c = stats[5][2] - stats[4][2];
-        statsObj.Post_Test_SOQL_Queries_Made__c = stats[5][3] - stats[4][3];
-        statsObj.Post_Test_SOSL_Queries_Made__c = stats[5][4] - stats[4][4];
+        Integer Outside_Test_CPU_Time_Elapsed = Setup_CPU_Time_Elapsed + Post_Test_CPU_Time_Elapsed;
+        Integer Outside_Test_DML_Statements_Made = Setup_DML_Statements_Made + Post_Test_DML_Statements_Made;
+        Integer Outside_Test_Future_Calls_Made = Setup_Future_Calls_Made + Post_Test_Future_Calls_Made;
+        Integer Outside_Test_SOQL_Queries_Made = Setup_SOQL_Queries_Made + Post_Test_SOQL_Queries_Made;
+        Integer Outside_Test_SOSL_Queries_Made = Setup_SOSL_Queries_Made + Post_Test_SOSL_Queries_Made;
 
-        statsObj.Outside_Test_CPU_Time_Elapsed__c = statsObj.Setup_CPU_Time_Elapsed__c + statsObj.Post_Test_CPU_Time_Elapsed__c;
-        statsObj.Outside_Test_DML_Statements_Made__c = statsObj.Setup_DML_Statements_Made__c + statsObj.Post_Test_DML_Statements_Made__c;
-        statsObj.Outside_Test_Future_Calls_Made__c = statsObj.Setup_Future_Calls_Made__c + statsObj.Post_Test_Future_Calls_Made__c;
-        statsObj.Outside_Test_SOQL_Queries_Made__c = statsObj.Setup_SOQL_Queries_Made__c + statsObj.Post_Test_SOQL_Queries_Made__c;
-        statsObj.Outside_Test_SOSL_Queries_Made__c = statsObj.Setup_SOSL_Queries_Made__c + statsObj.Post_Test_SOSL_Queries_Made__c;
-
-        statsObj.Total_CPU_Time_Elapsed__c = statsObj.Setup_CPU_Time_Elapsed__c + statsObj.Test_CPU_Time_Elapsed__c + statsObj.Post_Test_CPU_Time_Elapsed__c;
+        Integer Total_CPU_Time_Elapsed = Setup_CPU_Time_Elapsed + Test_CPU_Time_Elapsed + Post_Test_CPU_Time_Elapsed;
 
         //TEMPOARY DEBUGS (HOPEFULLY TEMPORARY)
         LogSuite.log('TestFactory', 'Unique Name: ' + String.valueOf(Datetime.now().getTime()));
@@ -195,45 +188,12 @@ public class TestFactory
         LogSuite.log('TestFactory', 'Post_Test_Future_Calls_Made__c: ' + (stats[5][2] - stats[4][2]));
         LogSuite.log('TestFactory', 'Post_Test_SOQL_Queries_Made__c: ' + (stats[5][3] - stats[4][3]));
         LogSuite.log('TestFactory', 'Post_Test_SOSL_Queries_Made__c: ' + (stats[5][4] - stats[4][4]));
-        LogSuite.log('TestFactory', 'Outside_Test_CPU_Time_Elapsed__c: ' + (statsObj.Setup_CPU_Time_Elapsed__c + statsObj.Post_Test_CPU_Time_Elapsed__c));
-        LogSuite.log('TestFactory', 'Outside_Test_DML_Statements_Made__c: ' + (statsObj.Setup_DML_Statements_Made__c + statsObj.Post_Test_DML_Statements_Made__c));
-        LogSuite.log('TestFactory', 'Outside_Test_Future_Calls_Made__c: ' + (statsObj.Setup_Future_Calls_Made__c + statsObj.Post_Test_Future_Calls_Made__c));
-        LogSuite.log('TestFactory', 'Outside_Test_SOQL_Queries_Made__c: ' + (statsObj.Setup_SOQL_Queries_Made__c + statsObj.Post_Test_SOQL_Queries_Made__c));
-        LogSuite.log('TestFactory', 'Outside_Test_SOSL_Queries_Made__c: ' + (statsObj.Setup_SOSL_Queries_Made__c + statsObj.Post_Test_SOSL_Queries_Made__c));
-        LogSuite.log('TestFactory', 'Total_CPU_Time_Elapsed__c: ' + (statsObj.Setup_CPU_Time_Elapsed__c + statsObj.Test_CPU_Time_Elapsed__c + statsObj.Post_Test_CPU_Time_Elapsed__c));
-
-        //TRANSFER EVERYTHING BELOW INTO A WEB SERVICE
-        /*List<SF_Test_Statistics__c> test = [
-            SELECT Id, Average_Total_CPU_Time__c, Average_Outside_CPU_Time__c, Average_Post_CPU_Time__c, Average_Setup_CPU_Time__c, Average_Test_CPU_Time__c, Times_Successfully_Run__c
-            FROM SF_Test_Statistics__c
-            WHERE Name = :statsObj.Name
-        ];
-
-        if(test.size() > 0)
-        {
-            statsObj.Id = test[0].Id;
-            Decimal previousTimesSuccessfullyRun = statsObj.Times_Successfully_Run__c;
-
-            statsObj.Times_Successfully_Run__c = test[0].Times_Successfully_Run__c + 1;
-            statsObj.Average_Setup_CPU_Time__c = (statsObj.Average_Setup_CPU_Time__c * previousTimesSuccessfullyRun + statsObj.Setup_CPU_Time_Elapsed__c) / statsObj.Times_Successfully_Run__c;
-            statsObj.Average_Test_CPU_Time__c = (statsObj.Average_Test_CPU_Time__c * previousTimesSuccessfullyRun + statsObj.Test_CPU_Time_Elapsed__c) / statsObj.Times_Successfully_Run__c;
-            statsObj.Average_Post_CPU_Time__c = (statsObj.Average_Post_CPU_Time__c * previousTimesSuccessfullyRun + statsObj.Post_Test_CPU_Time_Elapsed__c) / statsObj.Times_Successfully_Run__c;
-            statsObj.Average_Outside_CPU_Time__c = (statsObj.Average_Outside_CPU_Time__c * previousTimesSuccessfullyRun + statsObj.Outside_Test_CPU_Time_Elapsed__c) / statsObj.Times_Successfully_Run__c;
-            statsObj.Average_Total_CPU_Time__c = (statsObj.Average_Total_CPU_Time__c * previousTimesSuccessfullyRun + statsObj.Total_CPU_Time_Elapsed__c) / statsObj.Times_Successfully_Run__c;
-
-            update statsObj;
-        }
-        else
-        {
-            statsObj.Times_Successfully_Run__c = 1;
-            statsObj.Average_Setup_CPU_Time__c = statsObj.Setup_CPU_Time_Elapsed__c;
-            statsObj.Average_Test_CPU_Time__c = statsObj.Test_CPU_Time_Elapsed__c;
-            statsObj.Average_Post_CPU_Time__c = statsObj.Post_Test_CPU_Time_Elapsed__c;
-            statsObj.Average_Outside_CPU_Time__c = statsObj.Outside_Test_CPU_Time_Elapsed__c;
-            statsObj.Average_Total_CPU_Time__c = statsObj.Total_CPU_Time_Elapsed__c;
-
-            insert statsObj;
-        }*/
+        LogSuite.log('TestFactory', 'Outside_Test_CPU_Time_Elapsed__c: ' + (Setup_CPU_Time_Elapsed + Post_Test_CPU_Time_Elapsed));
+        LogSuite.log('TestFactory', 'Outside_Test_DML_Statements_Made__c: ' + (Setup_DML_Statements_Made + Post_Test_DML_Statements_Made));
+        LogSuite.log('TestFactory', 'Outside_Test_Future_Calls_Made__c: ' + (Setup_Future_Calls_Made + Post_Test_Future_Calls_Made));
+        LogSuite.log('TestFactory', 'Outside_Test_SOQL_Queries_Made__c: ' + (Setup_SOQL_Queries_Made + Post_Test_SOQL_Queries_Made));
+        LogSuite.log('TestFactory', 'Outside_Test_SOSL_Queries_Made__c: ' + (Setup_SOSL_Queries_Made + Post_Test_SOSL_Queries_Made));
+        LogSuite.log('TestFactory', 'Total_CPU_Time_Elapsed__c: ' + (Setup_CPU_Time_Elapsed + Test_CPU_Time_Elapsed + Post_Test_CPU_Time_Elapsed));
     }
     
     private static ITest getHandler(Type t)
