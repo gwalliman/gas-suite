@@ -34,7 +34,7 @@ public class CaseList extends sObjectList
         return (List<Case>) JSON.deserialize(JSON.serialize(super.getChangedObjects()), List<Case>.class);
     }
 
-    public AccountList getParentAccounts()
+    /*public AccountList getParentAccounts()
     {
         if(accountsLinkedToCase == null)
         {
@@ -42,14 +42,14 @@ public class CaseList extends sObjectList
         }
 
         return accountsLinkedToCase;
-    }
+    }*/
 
     /**
      * Load all Accounts that this CaseList references
      * Note that we call "setChildren" at the end.
      * If you want to see us load CHILDREN instead of PARENTS, check out AccountList or OpportunityList
      */
-    public void loadParentAccounts()
+    /*public void loadParentAccounts()
     {
         if(accountsLinkedToCase == null)
         {
@@ -72,5 +72,5 @@ public class CaseList extends sObjectList
                 accountsLinkedToCase.setChildren(this, 'AccountId');
             }
         }
-    }
+    }*/
 }
